@@ -8,7 +8,7 @@
     {"NAME":"autoGlitch", "LABEL":"Auto Glitch", "TYPE":"bool", "DEFAULT":true},
     {"NAME":"glitchNow", "LABEL":"Glitch Now", "TYPE":"event"},
     {"NAME":"frequency", "LABEL":"Frequency (Hz)", "TYPE":"float", "DEFAULT":0.25, "MIN":0.033333, "MAX":20.0},
-    {"NAME":"duration", "LABEL":"Duration (cycle ratio)", "TYPE":"float", "DEFAULT":1.0, "MIN":0.0, "MAX":1.0},
+    {"NAME":"duration", "LABEL":"Duration (active time ratio)", "TYPE":"float", "DEFAULT":1.0, "MIN":0.0, "MAX":1.0},
     {"NAME":"chance", "LABEL":"Auto Chance", "TYPE":"float", "DEFAULT":1.0, "MIN":0.0, "MAX":1.0},
     {"NAME":"changeSpeed", "LABEL":"Changes per Second", "TYPE":"float", "DEFAULT":0.0, "MIN":0.0, "MAX":60.0},
     {"NAME":"levelX", "LABEL":"Width Scale", "TYPE":"float", "DEFAULT":2.0, "MIN":0.01, "MAX":10.0},
