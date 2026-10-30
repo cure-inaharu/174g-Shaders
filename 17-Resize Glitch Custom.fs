@@ -2,15 +2,15 @@
   "ISFVSN": "2",
   "CATEGORIES": ["Glitch", "Geometry Adjustment"],
   "CREDIT": "Based on Resize Glitch by VIDVOX; customized timing controls",
-  "DESCRIPTION": "Timed resize glitches with independent interval, duration, change speed and random scale ranges.",
+  "DESCRIPTION": "Timed resize glitches with independent frequency, duration, change speed and random scale ranges.",
   "INPUTS": [
     {"NAME":"inputImage", "TYPE":"image"},
     {"NAME":"autoGlitch", "LABEL":"Auto Glitch", "TYPE":"bool", "DEFAULT":true},
     {"NAME":"glitchNow", "LABEL":"Glitch Now", "TYPE":"event"},
-    {"NAME":"interval", "LABEL":"Interval (seconds)", "TYPE":"float", "DEFAULT":1.0, "MIN":0.05, "MAX":30.0},
-    {"NAME":"duration", "LABEL":"Duration (seconds)", "TYPE":"float", "DEFAULT":0.25, "MIN":0.01, "MAX":30.0},
+    {"NAME":"frequency", "LABEL":"Frequency (Hz)", "TYPE":"float", "DEFAULT":0.25, "MIN":0.033333, "MAX":20.0},
+    {"NAME":"duration", "LABEL":"Duration (cycle ratio)", "TYPE":"float", "DEFAULT":1.0, "MIN":0.0, "MAX":1.0},
     {"NAME":"chance", "LABEL":"Auto Chance", "TYPE":"float", "DEFAULT":1.0, "MIN":0.0, "MAX":1.0},
-    {"NAME":"changeSpeed", "LABEL":"Changes per Second", "TYPE":"float", "DEFAULT":12.0, "MIN":0.0, "MAX":60.0},
+    {"NAME":"changeSpeed", "LABEL":"Changes per Second", "TYPE":"float", "DEFAULT":0.0, "MIN":0.0, "MAX":60.0},
     {"NAME":"levelX", "LABEL":"Width Scale", "TYPE":"float", "DEFAULT":2.0, "MIN":0.01, "MAX":10.0},
     {"NAME":"levelY", "LABEL":"Height Scale", "TYPE":"float", "DEFAULT":2.0, "MIN":0.01, "MAX":10.0},
     {"NAME":"randomizeWidth", "LABEL":"Randomize Width", "TYPE":"bool", "DEFAULT":true},
@@ -18,7 +18,7 @@
     {"NAME":"minRandomScale", "LABEL":"Random Scale Minimum", "TYPE":"float", "DEFAULT":0.1, "MIN":0.01, "MAX":1.0},
     {"NAME":"maxRandomScale", "LABEL":"Random Scale Maximum", "TYPE":"float", "DEFAULT":1.0, "MIN":0.01, "MAX":2.0},
     {"NAME":"center", "LABEL":"Center", "TYPE":"point2D", "DEFAULT":[0.5,0.5], "MIN":[0,0], "MAX":[1,1]},
-    {"NAME":"randomizeCenter", "LABEL":"Randomize Center", "TYPE":"bool", "DEFAULT":true},
+    {"NAME":"randomizeCenter", "LABEL":"Randomize Center", "TYPE":"bool", "DEFAULT":false},
     {"NAME":"mixAmount", "LABEL":"Mix", "TYPE":"float", "DEFAULT":1.0, "MIN":0.0, "MAX":1.0}
   ],
   "PASSES": [
@@ -44,14 +44,15 @@ void main() {
     }
   } else {
     vec4 state = IMG_NORM_PIXEL(eventState, vec2(0.5));
-    float period = max(interval, 0.05);
+    float period = 1.0 / max(frequency, 0.033333);
+    float durationSeconds = duration * period;
     float cycle = floor(TIME / period);
     float autoAge = mod(TIME, period);
     float manualAge = TIME - state.r;
-    bool manualActive = state.b > 0.5 && manualAge >= 0.0 && manualAge < duration;
-    bool autoActive = autoGlitch && autoAge < min(duration, period)
+    bool manualActive = state.b > 0.5 && manualAge >= 0.0 && manualAge < durationSeconds;
+    bool autoActive = autoGlitch && autoAge < durationSeconds
       && (chance >= 1.0 || (chance > 0.0 && randomValue(vec2(cycle, 9.731)) < chance));
-    bool active = manualActive || autoActive;
+    bool glitchActive = manualActive || autoActive;
     float age = manualActive ? manualAge : autoAge;
     float seed = manualActive ? state.g + 1000.0 : cycle;
     float stepIndex = floor(age * max(changeSpeed, 0.0));
@@ -63,12 +64,25 @@ void main() {
     vec2 pivot = randomizeCenter
       ? vec2(randomValue(key + vec2(1.24, 0.234)), randomValue(key + vec2(2.93, 1.234)))
       : center;
+    // Ease between automatic cycles when the effect stays on continuously.
+    if (!manualActive && duration >= 0.999 && chance >= 1.0 && changeSpeed <= 0.0 && cycle >= 1.0) {
+      vec2 previousKey = vec2(cycle - 1.0, 0.0);
+      float previousWidth = randomizeWidth ? levelX * mix(lowScale, highScale, randomValue(previousKey + vec2(0.315, 32.0))) : levelX;
+      float previousHeight = randomizeHeight ? levelY * mix(lowScale, highScale, randomValue(previousKey + vec2(0.942, 43.0))) : levelY;
+      vec2 previousPivot = randomizeCenter
+        ? vec2(randomValue(previousKey + vec2(1.24, 0.234)), randomValue(previousKey + vec2(2.93, 1.234)))
+        : center;
+      float transition = smoothstep(0.0, min(0.5, period * 0.25), autoAge);
+      width = mix(previousWidth, width, transition);
+      height = mix(previousHeight, height, transition);
+      pivot = mix(previousPivot, pivot, transition);
+    }
     vec2 loc = (isf_FragNormCoord - pivot) / max(vec2(width, height), vec2(0.001)) + pivot;
     vec4 original = IMG_NORM_PIXEL(inputImage, isf_FragNormCoord);
     vec4 resized = vec4(0.0);
     if (loc.x >= 0.0 && loc.y >= 0.0 && loc.x <= 1.0 && loc.y <= 1.0) {
       resized = IMG_NORM_PIXEL(inputImage, loc);
     }
-    gl_FragColor = active ? mix(original, resized, mixAmount) : original;
+    gl_FragColor = glitchActive ? mix(original, resized, mixAmount) : original;
   }
 }
