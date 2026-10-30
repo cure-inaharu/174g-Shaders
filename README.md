@@ -1,4 +1,4 @@
-# 174ga-shaders
+# 174ga-Shaders
 
 VDMXで使うISFシェーダーのコレクションです。シェーダーは `shaders/` フォルダに順次追加します。
 
