@@ -6,7 +6,7 @@ VDMXで使うISFシェーダーのコレクションです。シェーダーは 
 
 ## シェーダー
 
-- [17-Resize Glitch Custom.fs](shaders/17-Resize%20Glitch%20Custom.fs) — VIDVOXのResize Glitchをベースに、グリッチの発生頻度、表示時間、変化速度、倍率などを調整できるエフェクト。Frequencyは1秒あたりの発生回数（Hz）、Durationは1周期に対する表示時間の割合（0〜1）です。
+- [17-Resize Glitch.fs](shaders/17-Resize%20Glitch.fs) — VIDVOXのResize Glitchをベースに、グリッチの発生頻度、表示時間、変化速度、倍率などを調整できるエフェクト。Frequencyは1秒あたりの発生回数（Hz）、Durationは1周期に対する表示時間の割合（0〜1）です。
 - [4g-Stamp Trail.fs](shaders/4g-Stamp%20Trail.fs) — 軽量な持続型画像履歴（スタンプトレイル）エフェクト。時間経過による消失ではなく、Trail Amount（0〜100%）で履歴の保持・消去を調整します。
 
 ## 使い方
@@ -18,6 +18,6 @@ Changes per Secondが0のときは、グリッチ発生中はサイズと位置�
 
 ## クレジット
 
-Resize Glitch CustomはVIDVOXのResize Glitchをベースにしています。元のシェーダーのクレジットはファイル内にも記載しています。
+Resize GlitchはVIDVOXのResize Glitchをベースにしています。元のシェーダーのクレジットはファイル内にも記載しています。
 
 元の作品のライセンスは [VIDVOX-LICENSE.txt](VIDVOX-LICENSE.txt) を参照してください（出典：[VIDVOX ISF-Files](https://github.com/Vidvox/ISF-Files)）。
