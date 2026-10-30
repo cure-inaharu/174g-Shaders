@@ -2,6 +2,8 @@
 
 VDMXで使うISFシェーダーのコレクションです。シェーダーは `shaders/` フォルダに順次追加します。
 
+ファイル名の先頭に付く `17` はinaharu、`4g` は志賀、`174g` は二人による共同制作を示します。
+
 ## シェーダー
 
 - [17-Resize Glitch Custom.fs](shaders/17-Resize%20Glitch%20Custom.fs) — VIDVOXのResize Glitchをベースに、グリッチの発生頻度、表示時間、変化速度、倍率などを調整できるエフェクト。Frequencyは1秒あたりの発生回数（Hz）、Durationは1周期に対する表示時間の割合（0〜1）です。
